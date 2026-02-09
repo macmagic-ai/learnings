@@ -10,13 +10,13 @@ Personal guides and lessons learned from building AI agent teams, automation sys
 - [OpenClaw Lessons Learned](https://macmagic-ai.github.io/learnings/openclaw-guide.html) — Cron patterns, model selection, multi-agent coordination
 
 ### 💻 Development & Coding
-*Coming soon*
+- [Development Best Practices](https://macmagic-ai.github.io/learnings/dev-guide.html) — Git workflows, testing, code review
 
 ### 🔧 Tools & Automation
-*Coming soon*
+- [Tools & Automation Patterns](https://macmagic-ai.github.io/learnings/tools-guide.html) — Browser automation, APIs, CLI tools
 
 ### 📋 Workflows & Processes
-*Coming soon*
+- [Workflows & Coordination](https://macmagic-ai.github.io/learnings/workflows-guide.html) — Project management, scheduling, documentation
 
 ---
 
