@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw Lessons Learned — One Week of Building AI Agent Teams</title>
+
+<!-- OpenGraph Tags for nice link previews -->
+<meta property="og:title" content="OpenClaw Lessons Learned">
+<meta property="og:description" content="One week of building AI agent teams — cron patterns, model selection, multi-agent coordination, and hard-won lessons.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://macmagic-ai.github.io/learnings/openclaw-guide.html">
+<meta property="og:image" content="https://openclaw.ai/og-image.png">
+<meta property="og:site_name" content="MacMagic Learnings">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OpenClaw Lessons Learned">
+<meta name="twitter:description" content="One week of building AI agent teams — patterns that work.">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  color: #1e293b;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+.header .subtitle {
+  color: #64748b;
+  font-size: 1rem;
+}
+.header .emoji {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+/* Cards */
+.card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+.card-icon.blue { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+.card-icon.purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+.card-icon.amber { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+.card-icon.emerald { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+.card-icon.rose { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.card-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* Code blocks */
+.code {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: 'SF Mono', Monaco, Menlo, monospace;
+  font-size: 0.8rem;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin: 12px 0;
+  overflow-x: auto;
+}
+.code .comment { color: #64748b; }
+.code .cmd { color: #60a5fa; }
+.code .string { color: #34d399; }
+.code .param { color: #fbbf24; }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* Mini cards */
+.mini-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+  border-radius: 14px;
+  padding: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+.mini-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+.mini-card .label { font-weight: 600; font-size: 0.9rem; color: #1e293b; }
+.mini-card .sublabel { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+
+/* List items */
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+}
+.list-item .bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.list-item .bullet.green { background: #10b981; }
+.list-item .bullet.red { background: #ef4444; }
+.list-item .text { font-size: 0.9rem; color: #334155; }
+.list-item .hint { font-size: 0.8rem; color: #94a3b8; margin-top: 2px; }
+
+/* Alert boxes */
+.alert {
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.alert.warning {
+  background: linear-gradient(135deg, #fef3c7, #fef9c3);
+  border: 1px solid #fcd34d;
+}
+.alert.danger {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 1px solid #fca5a5;
+}
+.alert .icon { font-size: 1.2rem; }
+.alert .content { flex: 1; }
+.alert .title { font-weight: 600; font-size: 0.9rem; color: #92400e; }
+.alert.danger .title { color: #991b1b; }
+.alert .desc { font-size: 0.8rem; color: #a16207; margin-top: 2px; }
+.alert.danger .desc { color: #b91c1c; }
+
+/* Model cards */
+.model-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.8));
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+.model-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+.model-card.kimi::before { background: linear-gradient(90deg, #10b981, #34d399); }
+.model-card.sonnet::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.model-card.opus::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+.model-card .name { font-weight: 700; font-size: 1rem; color: #0f172a; }
+.model-card .desc { font-size: 0.8rem; color: #64748b; margin: 4px 0 8px; }
+.model-card .use { font-size: 0.75rem; color: #94a3b8; }
+.model-card .badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-top: 8px;
+}
+.model-card.kimi .badge { background: #d1fae5; color: #047857; }
+.model-card.sonnet .badge { background: #dbeafe; color: #1d4ed8; }
+.model-card.opus .badge { background: #fce7f3; color: #be185d; }
+
+/* Flow diagram */
+.flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border-radius: 14px;
+  margin: 16px 0;
+}
+.flow .agent { font-size: 1.8rem; }
+.flow .arrow { color: #94a3b8; font-size: 1.2rem; }
+.flow .hub {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Priority scale */
+.priority-scale {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+.priority-step {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.priority-step.p1 { background: #d1fae5; color: #047857; }
+.priority-step.p2 { background: #dbeafe; color: #1d4ed8; }
+.priority-step.p3 { background: #ede9fe; color: #6d28d9; }
+.priority-step.p4 { background: #fee2e2; color: #b91c1c; }
+
+/* Lesson cards */
+.lesson {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.lesson .icon { font-size: 1.5rem; }
+.lesson .title { font-weight: 600; font-size: 0.95rem; color: #0f172a; }
+.lesson .desc { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+
+/* Quick ref */
+.ref-section {
+  margin-bottom: 16px;
+}
+.ref-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.ref-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+.ref-item:last-child { border-bottom: none; }
+.ref-item .key { color: #64748b; }
+.ref-item .val { color: #0f172a; font-family: 'SF Mono', monospace; font-size: 0.8rem; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.6rem; }
+  .flow { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  
+  <!-- Header -->
+  <div class="header">
+    <div class="emoji">🦞</div>
+    <h1>OpenClaw Lessons Learned</h1>
+    <div class="subtitle">One week of building AI agent teams — patterns that work</div>
+  </div>
+
+  <!-- Rule #1: CLI First -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon blue">⌨️</div>
+      <div>
+        <div class="card-title">Rule #1: Use the CLI, Not JSON Files</div>
+        <div class="card-subtitle">The CLI validates and handles restarts automatically</div>
+      </div>
+    </div>
+    
+    <div class="code">
+      <span class="comment"># Check status</span><br>
+      <span class="cmd">openclaw status</span><br>
+      <span class="cmd">openclaw cron list</span><br><br>
+      <span class="comment"># Manage gateway</span><br>
+      <span class="cmd">openclaw gateway restart</span><br>
+      <span class="cmd">openclaw sessions --active 60</span>
+    </div>
+  </div>
+
+  <!-- Cron Learnings -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon amber">⏰</div>
+      <div>
+        <div class="card-title">Cron Jobs — What We Learned</div>
+        <div class="card-subtitle">Scheduling patterns that actually work</div>
+      </div>
+    </div>
+    
+    <div class="grid-2">
+      <div>
+        <div style="font-weight: 600; color: #10b981; margin-bottom: 12px;">✅ Do This</div>
+        <div class="list-item">
+          <div class="bullet green"></div>
+          <div>
+            <div class="text">Always set <code>timeoutSeconds</code></div>
+            <div class="hint">Runaway jobs burn $100+ overnight</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="bullet green"></div>
+          <div>
+            <div class="text">Use <code>wakeMode: "now"</code> for critical jobs</div>
+            <div class="hint">"next-heartbeat" can delay indefinitely</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="bullet green"></div>
+          <div>
+            <div class="text">Delivery needs <code>channel</code> AND <code>to</code></div>
+            <div class="hint">Just "announce" mode isn't enough</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-weight: 600; color: #ef4444; margin-bottom: 12px;">❌ Avoid This</div>
+        <div class="list-item">
+          <div class="bullet red"></div>
+          <div>
+            <div class="text">Running user testing hourly</div>
+            <div class="hint">Creates issue flood — use 2-4h intervals</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="bullet red"></div>
+          <div>
+            <div class="text">Forgetting "at" jobs auto-disable</div>
+            <div class="hint">Re-enable after testing</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="bullet red"></div>
+          <div>
+            <div class="text">Gateway restart during active jobs</div>
+            <div class="hint">Catch-up fires all missed runs → spam</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Agent Teams -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon purple">👥</div>
+      <div>
+        <div class="card-title">Multi-Agent Teams — The Pattern That Works</div>
+        <div class="card-subtitle">PM coordinates, agents don't talk directly</div>
+      </div>
+    </div>
+    
+    <div class="grid-4">
+      <div class="mini-card">
+        <div class="icon">📋</div>
+        <div class="label">PM</div>
+        <div class="sublabel">Coordinates</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">💻</div>
+        <div class="label">Developer</div>
+        <div class="sublabel">Builds</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">🔍</div>
+        <div class="label">QA</div>
+        <div class="sublabel">Reviews</div>
+      </div>
+      <div class="mini-card">
+        <div class="icon">🧪</div>
+        <div class="label">Tester</div>
+        <div class="sublabel">Explores</div>
+      </div>
+    </div>
+    
+    <div class="flow">
+      <span class="agent">🧪</span>
+      <span class="arrow">→</span>
+      <span class="hub">📋 PM Hub</span>
+      <span class="arrow">→</span>
+      <span class="agent">💻</span>
+    </div>
+    
+    <div class="grid-3" style="margin-top: 16px; font-size: 0.85rem;">
+      <div class="list-item" style="padding: 0;">
+        <div class="bullet green"></div>
+        <span>GitHub Issues = truth</span>
+      </div>
+      <div class="list-item" style="padding: 0;">
+        <div class="bullet green"></div>
+        <span>PRs for all changes</span>
+      </div>
+      <div class="list-item" style="padding: 0;">
+        <div class="bullet green"></div>
+        <span>Use <code>gh</code> CLI</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model Selection -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon emerald">🧠</div>
+      <div>
+        <div class="card-title">Model Selection — Specify or Pay the Price</div>
+        <div class="card-subtitle">We burned $150 in one night learning this</div>
+      </div>
+    </div>
+    
+    <div class="alert danger">
+      <div class="icon">⚠️</div>
+      <div class="content">
+        <div class="title">Always specify model when spawning agents!</div>
+        <div class="desc">Without it, sub-agents inherit the expensive default</div>
+      </div>
+    </div>
+    
+    <div class="grid-3">
+      <div class="model-card kimi">
+        <div class="name">Kimi</div>
+        <div class="desc">Cheap, good for bulk</div>
+        <div class="use">Dev agents, processing</div>
+        <div class="badge">$ LOW COST</div>
+      </div>
+      <div class="model-card sonnet">
+        <div class="name">Sonnet</div>
+        <div class="desc">Balanced, browser-capable</div>
+        <div class="use">QA, testing, PM</div>
+        <div class="badge">$$ RELIABLE</div>
+      </div>
+      <div class="model-card opus">
+        <div class="name">Opus</div>
+        <div class="desc">Complex reasoning only</div>
+        <div class="use">Strategy, planning</div>
+        <div class="badge">$$$$ EXPENSIVE</div>
+      </div>
+    </div>
+    
+    <div class="code" style="margin-top: 16px;">
+      <span class="comment"># When spawning, ALWAYS set model:</span><br>
+      <span class="cmd">sessions_spawn</span>(task=<span class="string">"Fix bug"</span>, <span class="param">model="kimi"</span>, timeoutSeconds=1800)
+    </div>
+  </div>
+
+  <!-- API First -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon blue">🔌</div>
+      <div>
+        <div class="card-title">API First, Browser Last</div>
+        <div class="card-subtitle">Browser automation burns 100K+ tokens per page</div>
+      </div>
+    </div>
+    
+    <div class="priority-scale">
+      <div class="priority-step p1">1️⃣ curl<br><small>Zero tokens</small></div>
+      <div class="priority-step p2">2️⃣ gh CLI<br><small>Minimal</small></div>
+      <div class="priority-step p3">3️⃣ Scripts<br><small>Reusable</small></div>
+      <div class="priority-step p4">4️⃣ Browser<br><small>Last resort</small></div>
+    </div>
+    
+    <div class="alert warning">
+      <div class="icon">💡</div>
+      <div class="content">
+        <div class="title">Code > Tokens</div>
+        <div class="desc">Write scripts for repetitive tasks instead of burning AI tokens</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hard Lessons -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon rose">💥</div>
+      <div>
+        <div class="card-title">Hard Lessons</div>
+        <div class="card-subtitle">So you don't repeat them</div>
+      </div>
+    </div>
+    
+    <div class="lesson">
+      <div class="icon">📝</div>
+      <div>
+        <div class="title">Write State to Files Immediately</div>
+        <div class="desc">Context compaction can wipe memory mid-task. If it matters, write it down.</div>
+      </div>
+    </div>
+    
+    <div class="lesson">
+      <div class="icon">🔀</div>
+      <div>
+        <div class="title">Sequential Browser Agents Only</div>
+        <div class="desc">Parallel agents share one browser = conflicts. Run one at a time.</div>
+      </div>
+    </div>
+    
+    <div class="lesson">
+      <div class="icon">📁</div>
+      <div>
+        <div class="title">One Workspace, One Truth</div>
+        <div class="desc">Dual workspaces = lost work. We lost 8 hours of improvements. Pick one.</div>
+      </div>
+    </div>
+    
+    <div class="lesson">
+      <div class="icon">🎨</div>
+      <div>
+        <div class="title">Never Change HTML + CSS Together</div>
+        <div class="desc">Visual redesigns that change HTML break JS selectors silently.</div>
+      </div>
+    </div>
+    
+    <div class="lesson">
+      <div class="icon">📎</div>
+      <div>
+        <div class="title">Create Shareable HTML Files</div>
+        <div class="desc">Reports, infographics, summaries — always output as standalone HTML so it can be attached and shared.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Reference -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon blue">📋</div>
+      <div>
+        <div class="card-title">Quick Reference</div>
+      </div>
+    </div>
+    
+    <div class="grid-3">
+      <div class="ref-section">
+        <div class="ref-title">Key Paths</div>
+        <div class="ref-item"><span class="key">Config</span><span class="val">~/.openclaw/openclaw.json</span></div>
+        <div class="ref-item"><span class="key">Crons</span><span class="val">~/.openclaw/cron/jobs.json</span></div>
+        <div class="ref-item"><span class="key">Env</span><span class="val">~/.openclaw/.env</span></div>
+      </div>
+      <div class="ref-section">
+        <div class="ref-title">Model Aliases</div>
+        <div class="ref-item"><span class="key">kimi</span><span class="val">moonshot/kimi-k2.5</span></div>
+        <div class="ref-item"><span class="key">sonnet</span><span class="val">claude-sonnet-4-5</span></div>
+        <div class="ref-item"><span class="key">opus</span><span class="val">claude-opus-4-5</span></div>
+      </div>
+      <div class="ref-section">
+        <div class="ref-title">Intervals</div>
+        <div class="ref-item"><span class="key">Testing</span><span class="val">2-4 hours</span></div>
+        <div class="ref-item"><span class="key">PM</span><span class="val">2-4 hours</span></div>
+        <div class="ref-item"><span class="key">Watchdog</span><span class="val">5-10 min</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    🦞 OpenClaw • docs.openclaw.ai • discord.gg/clawd
+  </div>
+
+</div>
+</body>
+</html>
