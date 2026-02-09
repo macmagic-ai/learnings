@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MacMagic Learnings</title>
+<title>Learnings — Guides from Building with AI</title>
 
-<meta property="og:title" content="MacMagic Learnings">
-<meta property="og:description" content="Shareable guides and infographics about AI agents, automation, and building with OpenClaw.">
+<meta property="og:title" content="Learnings">
+<meta property="og:description" content="Personal guides and lessons learned from building AI agent teams, automation systems, and software projects.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://macmagic-ai.github.io/learnings/">
-<meta property="og:site_name" content="MacMagic Learnings">
+<meta property="og:site_name" content="Learnings">
 
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,13 +21,16 @@ body {
   padding: 60px 20px;
 }
 .container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
-  text-align: center;
 }
-.emoji { font-size: 4rem; margin-bottom: 20px; }
+.header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.emoji { font-size: 3.5rem; margin-bottom: 16px; }
 h1 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 800;
   background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
   -webkit-background-clip: text;
@@ -36,41 +39,109 @@ h1 {
 }
 .subtitle {
   color: #64748b;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Categories */
+.category {
   margin-bottom: 40px;
 }
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.category-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+.category-icon.agents { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+.category-icon.dev { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+.category-icon.tools { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+.category-icon.workflows { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+
+.category-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.category-count {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-left: auto;
+}
+
+/* Guide cards */
 .guides {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 .guide {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border-radius: 14px;
+  padding: 20px 24px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
   text-decoration: none;
   color: inherit;
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 .guide:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
-.guide h2 {
-  font-size: 1.1rem;
-  font-weight: 700;
+.guide-content { flex: 1; }
+.guide h3 {
+  font-size: 1rem;
+  font-weight: 600;
   color: #0f172a;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .guide p {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #64748b;
+  line-height: 1.5;
 }
+.guide-arrow {
+  color: #94a3b8;
+  font-size: 1.2rem;
+}
+.guide:hover .guide-arrow {
+  color: #3b82f6;
+}
+
+/* Placeholder for future guides */
+.coming-soon {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  padding: 20px 24px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
 .footer {
+  text-align: center;
   margin-top: 60px;
+  padding-top: 30px;
+  border-top: 1px solid rgba(0,0,0,0.06);
   color: #94a3b8;
   font-size: 0.85rem;
 }
@@ -79,20 +150,71 @@ h1 {
 </head>
 <body>
 <div class="container">
-  <div class="emoji">🦞</div>
-  <h1>MacMagic Learnings</h1>
-  <p class="subtitle">Shareable guides about AI agents and automation</p>
   
-  <div class="guides">
-    <a href="openclaw-guide.html" class="guide">
-      <h2>OpenClaw Lessons Learned</h2>
-      <p>One week of building AI agent teams — cron patterns, model selection, multi-agent coordination.</p>
-    </a>
+  <div class="header">
+    <div class="emoji">📚</div>
+    <h1>Learnings</h1>
+    <p class="subtitle">Personal guides and lessons learned from building AI agent teams, automation systems, and software projects.</p>
   </div>
-  
+
+  <!-- AI Agents & OpenClaw -->
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon agents">🤖</div>
+      <div class="category-title">AI Agents & OpenClaw</div>
+      <div class="category-count">1 guide</div>
+    </div>
+    <div class="guides">
+      <a href="openclaw-guide.html" class="guide">
+        <div class="guide-content">
+          <h3>OpenClaw Lessons Learned</h3>
+          <p>One week of building AI agent teams — cron patterns, model selection, multi-agent coordination, and hard-won lessons.</p>
+        </div>
+        <div class="guide-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Development & Coding -->
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon dev">💻</div>
+      <div class="category-title">Development & Coding</div>
+      <div class="category-count">coming soon</div>
+    </div>
+    <div class="guides">
+      <div class="coming-soon">Guides on Git workflows, testing patterns, and code review coming soon</div>
+    </div>
+  </div>
+
+  <!-- Tools & Automation -->
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon tools">🔧</div>
+      <div class="category-title">Tools & Automation</div>
+      <div class="category-count">coming soon</div>
+    </div>
+    <div class="guides">
+      <div class="coming-soon">Guides on browser automation, API integrations, and scripting coming soon</div>
+    </div>
+  </div>
+
+  <!-- Workflows & Processes -->
+  <div class="category">
+    <div class="category-header">
+      <div class="category-icon workflows">📋</div>
+      <div class="category-title">Workflows & Processes</div>
+      <div class="category-count">coming soon</div>
+    </div>
+    <div class="guides">
+      <div class="coming-soon">Guides on project management, team coordination, and productivity coming soon</div>
+    </div>
+  </div>
+
   <div class="footer">
-    Built with <a href="https://openclaw.ai">OpenClaw</a>
+    Built with <a href="https://openclaw.ai">OpenClaw</a> 🦞
   </div>
+
 </div>
 </body>
 </html>
