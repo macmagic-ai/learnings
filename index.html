@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MacMagic Learnings</title>
+
+<meta property="og:title" content="MacMagic Learnings">
+<meta property="og:description" content="Shareable guides and infographics about AI agents, automation, and building with OpenClaw.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://macmagic-ai.github.io/learnings/">
+<meta property="og:site_name" content="MacMagic Learnings">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  color: #1e293b;
+  min-height: 100vh;
+  padding: 60px 20px;
+}
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+.emoji { font-size: 4rem; margin-bottom: 20px; }
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+}
+.subtitle {
+  color: #64748b;
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+}
+.guides {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.guide {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.guide:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+.guide h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+.guide p {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+.footer {
+  margin-top: 60px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+.footer a { color: #3b82f6; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="emoji">🦞</div>
+  <h1>MacMagic Learnings</h1>
+  <p class="subtitle">Shareable guides about AI agents and automation</p>
+  
+  <div class="guides">
+    <a href="openclaw-guide.html" class="guide">
+      <h2>OpenClaw Lessons Learned</h2>
+      <p>One week of building AI agent teams — cron patterns, model selection, multi-agent coordination.</p>
+    </a>
+  </div>
+  
+  <div class="footer">
+    Built with <a href="https://openclaw.ai">OpenClaw</a>
+  </div>
+</div>
+</body>
+</html>
